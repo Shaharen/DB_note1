@@ -1,0 +1,138 @@
+desc -> 테이블의 모양 확인
+select * from departments; : 모든 departments 파일을 보여달라
+column department_name format a20 : dep_name의 파일을 알파벳20자로 편집하겠다.
+column department_id format 999 : 숫자를 3자리로 편집하겠다.
+column department_name clear : 초기상태로 되돌림
+column -> 버퍼에 저장 안됨 // 문자와 날짜는 a // 숫자는 9를 자릿수로 표현한다
+
+
+* desc dapartments
+
+DEPARTMENT_ID : 부서번호 (PK)
+DEPARTMENT_NAME : 부서이름
+MANAGER_ID : 부서장 ( 부서 관리자의 사원번호 )
+LOCATION_ID : 부서가 위치한 지역번호 (FK) -> Locations -> Location_ID 참조
+
+TYPE - NUMBER(4) : 숫자로 4자리까지 저장하겠다
+
+* desc employees
+
+EMPLOYEE_ID : 사원번호 (PK)
+FIRST_NAME
+LAST_NAME
+EMAIL
+PHONE_NUMBER
+HIRE_DATE : 입사 날짜
+JOB_ID : 현재 수행중인 업무
+SALARY : 월 급여
+COMMISSION_PCT : 보너스
+MANAGER_ID : 나를 관리하는 관리자( 내 사수 ) 의 사원번호
+DEPARTMENT_ID : 현재 내가 근무하고 있는 부서번호 (FK) -> departments -> department_id 참조
+
+* desc locations
+
+LOCATION_ID : 지역번호 (PK)
+STREET_ADDRESS : 주소
+POSTAL_CODE : 우편번호
+CITY : 도시 이름
+
+emp(자식) <-> (부모)dept(자식) <-> (부모)loc
+
+* 공부법
+1. code 작성 후 실행 No
+2. code 분석 및 해석
+3. 결과 예측
+4. code 실행
+5. 결과와 예측 비교
+
+p. 53
+특정 column 의 데이터 검색 : 프로젝션
+모든 column 의 데이터 검색 : selection
+조인 : 다수의 테이블에서 데이터를 검색할때 사용 *****
+
+* select 문--------------------------------------------------------------------------------------
+
+select column_name ( 보고자하는 data를 소유한 table ) - select list 절
+
+from table_name ( column_name 을 소유한 table )
+
+ - column_name 에 * 를 입력하면 모든 데이터 검색
+ex)
+select Last_name
+from employees
+
+- 기본적으로 행단위로 데이터 관리 ( 즉 같은 행에 있는 자료끼리 연관성이 있음 )
+
+- 열머리글, 컬럼 헤딩 : 결과로 출력되는 컬럼의 이름, 대문자로 출력됨
+- 컬럼을 나열하여 select 할때 나열한 순서대로 검색됨
+
+ex) 회사에 근무하는 사원의이름과 그 사원이 근무하는 부서번호를 출력하시오
+=> 	select last_name, department_id
+	from employees
+
+ex) 사원의 번호와 그 사원이 받는 월 급여를 출력하시오
+=>	select employee_id, salary
+	from employees
+
+ex) 사원의 번호와 그 사원이 받는 연봉을 출력하시오
+=>	select employee_id, salary*12
+	from employees
+ex) 
+=> 	select salary + salary 도 가능
+
+ex) 사원의 번호와 연봉을 구하시오
+단 보너스를 받는 사원은 보너스를 곱한 값을 출력하시오
+
+=>	select employee_id, salary*12*commission_pct
+	from employees;
+	즉, null에 대한 산술연산은 결과가 항상 null
+
+=>	select employee_id, salary*12*NVL(commission_pct,1)		p.64
+	from employees
+	=> NVL : 문장이 실행되는 동안 null이 있으면 값을 1로 계산하라
+
+=>	select employee_id, salary*12 as annsal
+	from employees
+	=> as XXXX = 열 머리글을 XXXX로 변경하여 이번 출력에서만 변경해서 출력
+	=> 한번에 한개만 가능
+
+=>	select last_name as name, commission_pct comm
+	from employees
+	=> last_name 을 name 으로 commission_pct 를 comm 으로 출력
+	=> 전부 대문자로 출력되며 공백으로도 열머리글 변경 가능
+
+=>	select last_name "Name", salary*12 "Annual Salary"
+	from employees
+	=> 복수 문장을 쓸때는 쌍따옴표 사용
+	=> select last_name "Name", salary*12 Annual Salary 로 쓰게되면
+		Annual 로 변경되며 Salary를 컬럼으로 인식함
+
+p. 70 리터럴 문자열
+
+=> 	select distinct department_id
+	from employees
+
+*distinct --------------------------------------------------------------------------------
+	=> 중복된 내용 제거( distinct ) // null 값도 중복취급하여 한번만 출력
+	=> 항상 select 바로 뒤에 올수있고 문장중 한번만 올수있음.
+	=> distinct 뒤 모든 컬럼의 중복 제거
+
+
+예제) 우리회사에 근무하는 사원의 이름과 연봉을 구하시오
+단 이름은 Name 으로 연봉은 ANNSAL 로 출력하시오
+
+select last_name "Name" ,salary*12 annsal
+from employees;
+
+= > 대소문자 구분하려면 "" 전부 대소문자면 as 나 띄어쓰기
+
+예제) 90번 부서에 근무하는 사원의 이름과 급여를 출력하시오
+
+=>	select last_name, salary
+	from employees
+	where department_id = 90;
+
+
+
+
+
